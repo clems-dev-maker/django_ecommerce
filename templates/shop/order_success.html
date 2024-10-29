@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h1 class="card-title">Merci pour votre commande !</h1>
+                </div>
+                <div class="card-body">
+                    <p class="lead text-center">Votre commande a bien été enregistrée. Voici les détails :</p>
+
+                    {% if order %}
+                        <div class="order-summary">
+                            <p><strong>Numéro de commande :</strong> <span class="badge bg-secondary">{{ order.id }}</span></p>
+                            <p><strong>Montant total :</strong> <span class="text-success">{{ order.total_price }} €</span></p>
+
+                            <h4 class="mt-4">Vos articles :</h4>
+                            <ul class="list-group mb-4">
+                                {% for item in order.items %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ item.product.name }}
+                                        <span class="badge bg-primary">{{ item.quantity }}x</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <p class="text-center">Nous vous enverrons un email de confirmation sous peu.</p>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            <p>Il semble qu'aucune commande ne soit associée à votre session actuelle.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <a href="/" class="btn btn-primary">Retour à la boutique</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

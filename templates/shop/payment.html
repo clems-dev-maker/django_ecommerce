@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Finalisez votre paiement</h2>
+
+    <!-- Formulaire de carte de crédit (si besoin) -->
+    <form method="post">
+        {% csrf_token %}
+        <!-- Sélection de la méthode de paiement -->
+        <div class="form-group">
+            <label for="paymentMethod">Méthode de paiement</label>
+            <select class="form-control" id="paymentMethod" name="paymentMethod">
+                <option value="credit_card">Carte de crédit</option>
+                <option value="paypal">PayPal</option>
+            </select>
+        </div>
+
+        <!-- Si l'utilisateur choisit "PayPal", le bouton PayPal apparaîtra ici -->
+        <div id="paypal-button-container"></div>
+
+        <!-- Soumettre le formulaire pour la carte de crédit -->
+        <button type="submit" class="btn btn-primary">Payer par carte de crédit</button>
+    </form>
+</div>
+
+<!-- Charger le SDK PayPal -->
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID"></script>
+
+<script>
+// Ajouter le bouton PayPal uniquement si l'utilisateur sélectionne PayPal
+document.getElementById('paymentMethod').addEventListener('change', function () {
+    if (this.value === 'paypal') {
+        paypal.Buttons({
+            createOrder: function (data, actions) {
+                // Configurer la transaction ici
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '100.00' // Remplacez par le montant de la commande
+                        }
+                    }]
+                });
+            },
+            onApprove: function (data, actions) {
+                // Capturer l'ordre une fois approuvé
+                return actions.order.capture().then(function (details) {
+                    // Rediriger vers une page de succès après la capture du paiement
+                    window.location.href = "{% url 'order_success' %}";
+                });
+            },
+            onError: function (err) {
+                console.error(err);
+                alert('Une erreur est survenue avec PayPal.');
+            }
+        }).render('#paypal-button-container');  // Rendre le bouton PayPal
+    } else {
+        document.getElementById('paypal-button-container').innerHTML = ''; // Supprimer le bouton PayPal
+    }
+});
+</script>
+{% endblock %}
