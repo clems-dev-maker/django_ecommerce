@@ -45,7 +45,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'clementcathala430@gmail.com'  # Remplace par ton adresse Gmail
-EMAIL_HOST_PASSWORD = 'Cm%mSv1f$Xn3k73Tf1zG'  # Le mot de passe d'application généré précédemment
+EMAIL_HOST_PASSWORD = 'SMTP_PASSWORD'  # Le mot de passe d'application généré précédemment
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Email d'envoi par défaut
 
 
