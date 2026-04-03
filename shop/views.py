@@ -1,8 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from .forms import CustomUserCreationForm
+from django.core.mail import send_mail
+from django.contrib.auth import login
+from django.contrib.auth import logout
 
-from .models import Product, Cart, CartItem, Order
+from .models import Product, Cart, CartItem, Order, Wishlist
 
 
 def product_list(request):
@@ -12,9 +16,18 @@ def product_list(request):
 
 def product_detail(request, slug):
     product = Product.objects.get(slug=slug)
-    return render(request, 'shop/product_detail.html', {'product': product})
+
+    user_wishlist = []
+    if request.user.is_authenticated:
+        user_wishlist = Wishlist.objects.filter(user=request.user).values_list('product', flat=True)
+
+    return render(request, 'shop/product_detail.html', {
+        'product': product,
+        'user_wishlist': user_wishlist
+    })
 
 
+@login_required
 def add_to_cart(request, product_id):
     product = Product.objects.get(id=product_id)
     cart, _ = Cart.objects.get_or_create(user=request.user)
@@ -35,6 +48,7 @@ def remove_from_cart(request, item_id):
     return redirect('cart_detail')  # Redirige vers la page du panier
 
 
+@login_required
 def cart_detail(request):
     try:
         cart = Cart.objects.get(user=request.user)
@@ -115,6 +129,30 @@ def payment(request):
         return redirect('cart_detail')
 
 
+@login_required
+def toggle_wishlist(request, product_id):
+    product = Product.objects.get(id=product_id)
+
+    wishlist_item, created = Wishlist.objects.get_or_create(
+        user=request.user,
+        product=product
+    )
+
+    if not created:
+        wishlist_item.delete()
+        messages.info(request, "Produit retiré des favoris")
+    else:
+        messages.success(request, "Produit ajouté aux favoris")
+
+    return redirect('product_detail', slug=product.slug)
+
+
+@login_required
+def wishlist(request):
+    items = Wishlist.objects.filter(user=request.user)
+    return render(request, 'shop/wishlist.html', {'items': items})
+
+
 def order_success(request):
     # Si tu passes des informations spécifiques, comme un récapitulatif de la commande
     order = request.session.get('order')  # Exemple de récupération d'infos de la session
@@ -122,3 +160,45 @@ def order_success(request):
         'order': order,
     }
     return render(request, 'shop/order_success.html', context)
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+
+            # Connexion automatique
+            login(request, user)
+
+            # Email de confirmation
+            send_mail(
+                subject="Bienvenue sur notre site !",
+                message=f"Bonjour {user.username}, votre compte a bien été créé.",
+                from_email=None,
+                recipient_list=[user.email],
+                fail_silently=True,
+            )
+
+            messages.success(request, "Compte créé avec succès !")
+            return redirect('product_list')
+        else:
+            messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'registration/signup.html', {'form': form})
+
+
+def custom_logout(request):
+    if request.method == "POST":
+        logout(request)
+        messages.success(request, "Vous avez été déconnecté avec succès.")
+        return redirect('product_list')
+
+
+@login_required
+def profile(request):
+    orders = Order.objects.filter(user=request.user)
+    return render(request, 'shop/profile.html', {'orders': orders})

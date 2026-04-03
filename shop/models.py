@@ -57,7 +57,7 @@ class Order(models.Model):
 
 
 class Cart(models.Model):
-    user = models.ForeignKey('auth.User' , on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, through='CartItem')
 
 
@@ -68,3 +68,14 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f'{self.quantity} x {self.product.name}'
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'product')
+
+    def __str__(self):
+        return f"{self.user} - {self.product}"

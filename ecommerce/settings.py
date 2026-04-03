@@ -77,7 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'shop.context_processors.cart_items_count',  # Ajouter le context processor du panier
+                'shop.context_processors.cart_data',  # Ajouter le context processor du panier
             ],
         },
     },
@@ -135,6 +135,10 @@ STATIC_URL = '/static/'
 # Emplacement où les fichiers uploadés seront stockés
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'product_list'
+LOGOUT_REDIRECT_URL = 'product_list'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

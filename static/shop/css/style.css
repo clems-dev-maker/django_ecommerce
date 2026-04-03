@@ -68,3 +68,6 @@ h1, h2, h3 {
         footer a:hover {
             color: #0056b3;
         }
+.badge {
+    font-size: 0.7rem;
+}

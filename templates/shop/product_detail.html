@@ -10,7 +10,20 @@
             <h1>{{ product.name }}</h1>
             <p>{{ product.description }}</p>
             <p><strong>Prix :</strong> {{ product.price }}€</p>
-            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-custom">Ajouter au panier</a><i class="fas fa-shopping-cart" style="color: #007bff;"></i>
+            <button class="btn btn-success add-to-cart" data-id="{{ product.id }}">
+                <i class="fas fa-cart-plus"></i> Ajouter au panier
+            </button>
+            <a href="{% url 'toggle_wishlist' product.id %}"
+               class="btn {% if product in user_wishlist %}btn-danger{% else %}btn-outline-danger{% endif %}">
+
+                <i class="fas fa-heart"></i>
+
+                {% if product.id in user_wishlist %}
+                    Retirer des favoris
+                {% else %}
+                    Ajouter aux favoris
+                {% endif %}
+            </a>
         </div>
     </div>
     <div class="mt-3">

@@ -13,15 +13,22 @@ urlpatterns = [
     path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
 
-
     # Route pour afficher le panier
     path('cart/', views.cart_detail, name='cart_detail'),
+
+    path('wishlist/toggle/<int:product_id>/', views.toggle_wishlist, name='toggle_wishlist'),
+
+    path('wishlist/', views.wishlist, name='wishlist'),
 
     # Route pour le processus de commande (checkout)
     path('checkout/', views.checkout, name='checkout'),
     path('payment/', views.payment, name='payment'),  # Ajoute cette ligne pour la vue paiement
     path('order/success/', views.order_success, name='order_success'),
 
+    path('signup/', views.signup, name='signup'),
+
+    path('profile/', views.profile, name='profile'),
+
     path('login/', auth_views.LoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', views.custom_logout, name='logout'),
 ]
