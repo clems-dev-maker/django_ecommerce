@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from .forms import CustomUserCreationForm
 from django.core.mail import send_mail
 from django.contrib.auth import login
@@ -32,8 +33,19 @@ def add_to_cart(request, product_id):
     product = Product.objects.get(id=product_id)
     cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
     cart_item.quantity += 1
     cart_item.save()
+
+    # Calcul du nouveau compteur
+    cart_count = sum(item.quantity for item in cart.cartitem_set.all())
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'cart_count': cart_count
+        })
+
     return redirect('cart_detail')
 
 
@@ -140,11 +152,13 @@ def toggle_wishlist(request, product_id):
 
     if not created:
         wishlist_item.delete()
-        messages.info(request, "Produit retiré des favoris")
+        status = 'removed'
     else:
-        messages.success(request, "Produit ajouté aux favoris")
+        status = 'added'
 
-    return redirect('product_detail', slug=product.slug)
+    return JsonResponse({
+        'status': status
+    })
 
 
 @login_required
