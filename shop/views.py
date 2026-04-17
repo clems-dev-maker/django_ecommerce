@@ -1,13 +1,16 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+import stripe
+from django.conf import settings
+from django.http import JsonResponse
 from django.http import JsonResponse
 from .forms import CustomUserCreationForm
 from django.core.mail import send_mail
 from django.contrib.auth import login
 from django.contrib.auth import logout
 
-from .models import Product, Cart, CartItem, Order, Wishlist
+from .models import Product, Cart, CartItem, Order, Wishlist, Review
 
 
 def product_list(request):
@@ -114,31 +117,16 @@ def checkout(request):
 
 @login_required
 def payment(request):
-    try:
-        cart = Cart.objects.get(user=request.user)
+    cart = Cart.objects.get(user=request.user)
 
-        if request.method == 'POST':
-            # Logique de traitement du paiement ici (via une API comme Stripe, PayPal, etc.)
-            # Si le paiement est validé, on crée les commandes
+    cart_items = cart.cartitem_set.all()
+    cart_total = sum(item.product.price * item.quantity for item in cart_items)
 
-            for item in cart.cartitem_set.all():
-                Order.objects.create(
-                    user=request.user,
-                    product=item.product,
-                    quantity=item.quantity,
-                    total_price=item.product.price * item.quantity
-                )
-
-            cart.delete()  # Vider le panier après le paiement
-
-            messages.success(request, "Paiement réussi. Merci pour votre commande !")
-            return redirect('order_success')  # Rediriger vers la page de succès de la commande
-
-        return render(request, 'shop/payment.html', {'cart': cart})
-
-    except Cart.DoesNotExist:
-        messages.error(request, "Votre panier est vide.")
-        return redirect('cart_detail')
+    return render(request, 'shop/payment.html', {
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+        'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY
+    })
 
 
 @login_required
@@ -216,3 +204,48 @@ def custom_logout(request):
 def profile(request):
     orders = Order.objects.filter(user=request.user)
     return render(request, 'shop/profile.html', {'orders': orders})
+
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+@login_required
+def create_checkout_session(request):
+    cart = Cart.objects.get(user=request.user)
+
+    line_items = []
+
+    for item in cart.cartitem_set.all():
+        line_items.append({
+            'price_data': {
+                'currency': 'eur',
+                'product_data': {
+                    'name': item.product.name,
+                },
+                'unit_amount': int(item.product.price * 100),
+            },
+            'quantity': item.quantity,
+        })
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
+        mode='payment',
+        success_url='http://127.0.0.1:8000/order/success/',
+        cancel_url='http://127.0.0.1:8000/cart/',
+    )
+
+    return JsonResponse({'id': session.id})
+
+
+@login_required
+def add_review(request, product_id):
+    if request.method == "POST":
+        Review.objects.create(
+            product_id=product_id,
+            user=request.user,
+            rating=request.POST.get('rating'),
+            comment=request.POST.get('comment')
+        )
+
+    return redirect('product_detail', slug=request.POST.get('slug'))

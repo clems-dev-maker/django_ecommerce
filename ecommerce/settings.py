@@ -54,6 +54,11 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')  # Remplace par ton adresse Gmail
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')  # Le mot de passe d'application généré précédemment
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Email d'envoi par défaut
 
+STRIPE_PUBLIC_KEY = ("pk_test_51M1ndoBlNcXWBs9scd5IZ0FAWbuXCVH3OKKsWzGBHJKm"
+                     "YKVg5Ula5XnAJTvrX3M77vxLzGnPyBBwCjfYURHSAc8400x2BPB7gs")
+STRIPE_SECRET_KEY = ("sk_test_51M1ndoBlNcXWBs9sce122JO9pH2U9iQTRGqfgpuVMQKsq"
+                     "N9FSPUAydi64qChdBSpGm2Pjy45UMyVkhnK2p3bAHsD00h4pGXjsS")
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

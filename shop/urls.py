@@ -20,9 +20,14 @@ urlpatterns = [
 
     path('wishlist/', views.wishlist, name='wishlist'),
 
+    path('review/add/<int:product_id>/', views.add_review, name='add_review'),
+
     # Route pour le processus de commande (checkout)
     path('checkout/', views.checkout, name='checkout'),
+
+    path('create-checkout-session/', views.create_checkout_session, name='stripe_checkout'),
     path('payment/', views.payment, name='payment'),  # Ajoute cette ligne pour la vue paiement
+
     path('order/success/', views.order_success, name='order_success'),
 
     path('signup/', views.signup, name='signup'),

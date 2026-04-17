@@ -32,6 +32,32 @@
                 {% endif %}
             </button>
         </div>
+    
+        <hr>
+        <h4>Avis clients</h4>
+
+        <form method="post" action="{% url 'add_review' product.id %}">
+            {% csrf_token %}
+            <select name="rating" class="form-control mb-2">
+                <option value="5">⭐⭐⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="1">⭐</option>
+            </select>
+
+            <textarea name="comment" class="form-control mb-2"></textarea>
+
+            <input type="hidden" name="slug" value="{{ product.slug }}">
+            <button class="btn btn-primary">Poster</button>
+        </form>
+
+        {% for review in product.review_set.all %}
+            <div class="mt-3">
+                <strong>{{ review.user.username }}</strong>
+                <p>{{ review.comment }}</p>
+            </div>
+        {% endfor %}
 
     </div>
 
