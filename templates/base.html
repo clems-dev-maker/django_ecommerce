@@ -31,97 +31,119 @@
 
                 {% if user.is_authenticated %}
 
-                <!-- PANIER -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle position-relative" href="#" data-bs-toggle="dropdown">
-                        <i class="fas fa-shopping-cart"></i>
+                    <!-- 🛒 PANIER -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle position-relative" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-shopping-cart"></i>
 
-                        {% if cart_count > 0 %}
-                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle cart-count">
-                            {{ cart_count }}
-                        </span>
-                        {% endif %}
-                    </a>
+                            {% if cart_count > 0 %}
+                               <span class="badge bg-danger position-absolute top-0 start-100 translate-middle cart-count">
+                                    {{ cart_count|default:0 }}
+                               </span>
+                            {% endif %}
+                        </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end p-3" style="width: 320px;">
-                        <h6>Mon panier</h6>
-                        <hr>
-
-                        {% if cart_items_nav %}
-                            {% for item in cart_items_nav %}
-                                <div class="d-flex align-items-center mb-2">
-
-                                    <img src="{{ item.product.image.url }}" width="40" height="40" class="rounded me-2" alt="product_image">
-
-                                    <div class="flex-grow-1">
-                                        <small>{{ item.product.name }}</small><br>
-                                        <small class="text-muted">{{ item.quantity }} x {{ item.product.price }}€</small>
-                                    </div>
-
-                                    <a href="{% url 'remove_from_cart' item.id %}" class="text-danger ms-2">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-
-                                </div>
-                            {% endfor %}
-
+                        <ul class="dropdown-menu dropdown-menu-end p-3" style="width: 320px;">
+                            <h6>Mon panier</h6>
                             <hr>
 
-                            <div class="d-flex justify-content-between">
-                                <strong>Total :</strong>
-                                <strong>{{ cart_total }} €</strong>
-                            </div>
+                            {% if cart_items_nav %}
+                                {% for item in cart_items_nav %}
+                                    <div class="d-flex align-items-center mb-2">
 
-                            <a href="{% url 'cart_detail' %}" class="btn btn-primary w-100 mt-2">
-                                Voir le panier
-                            </a>
+                                        <img src="{{ item.product.image.url }}" width="40" height="40"
+                                             class="rounded me-2" alt="product_image">
 
-                        {% else %}
-                            <p class="text-muted">Panier vide</p>
-                        {% endif %}
-                    </ul>
-                </li>
+                                        <div class="flex-grow-1">
+                                            <small>{{ item.product.name }}</small><br>
+                                            <small class="text-muted">{{ item.quantity }}
+                                                x {{ item.product.price }}€</small>
+                                        </div>
 
-                <!-- USER -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> {{ user.username }}
-                    </a>
+                                        <a href="{% url 'remove_from_cart' item.id %}" class="text-danger ms-2">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end">
+                                    </div>
+                                {% endfor %}
 
-                        <li class="dropdown-item-text">
-                            <strong>{{ user.username }}</strong><br>
-                            <small class="text-muted">{{ user.email }}</small>
-                        </li>
+                                <hr>
 
-                        <li><hr class="dropdown-divider"></li>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total :</strong>
+                                    <strong>{{ cart_total }} €</strong>
+                                </div>
 
-                        <li>
-                            <a class="dropdown-item" href="{% url 'profile' %}">
-                                <i class="fas fa-id-card"></i> Mon profil
-                            </a>
-                        </li>
+                                <a href="{% url 'cart_detail' %}" class="btn btn-primary w-100 mt-2">
+                                    Voir le panier
+                                </a>
 
-                        <li>
-                            <a class="dropdown-item" href="{% url 'wishlist' %}">
-                                <i class="fas fa-heart"></i> Favoris
-                            </a>
-                        </li>
+                            {% else %}
+                                <p class="text-muted">Panier vide</p>
+                            {% endif %}
+                        </ul>
+                    </li>
 
-                        <li><hr class="dropdown-divider"></li>
+                    <!-- 👤 USER CONNECTÉ -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> {{ user.username }}
+                        </a>
 
-                        <li>
-                            <form action="{% url 'logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="fas fa-sign-out-alt"></i> Déconnexion
-                                </button>
-                            </form>
-                        </li>
+                        <ul class="dropdown-menu dropdown-menu-end">
 
-                    </ul>
-                </li>
+                            <li class="dropdown-item-text">
+                                <strong>{{ user.username }}</strong><br>
+                                <small class="text-muted">{{ user.email }}</small>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fas fa-id-card"></i> Mon profil
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="{% url 'wishlist' %}">
+                                    <i class="fas fa-heart"></i> Favoris
+                                </a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <li>
+                                <form action="{% url 'logout' %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                                    </button>
+                                </form>
+                            </li>
+
+                        </ul>
+                    </li>
+
+                {% else %}
+
+                    <!-- 👤 USER NON CONNECTÉ -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Connexion
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'signup' %}">
+                            <i class="fas fa-user-plus"></i> Inscription
+                        </a>
+                    </li>
+                    
 
                 {% endif %}
 
@@ -169,26 +191,16 @@ function showToast(message) {
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    function showToast(message) {
+    let toastEl = document.getElementById('toast');
+    let toastBody = document.getElementById('toast-body');
 
-    // ADD TO CART
-    document.querySelectorAll(".add-to-cart").forEach(button => {
-        button.addEventListener("click", function () {
+    toastBody.textContent = message;
 
-            let productId = this.dataset.id;
+    let toast = new bootstrap.Toast(toastEl);
+    toast.show();
+}
 
-            fetch(`/cart/add/${productId}/`, {
-                headers: {"X-Requested-With": "XMLHttpRequest"}
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelector(".cart-count").textContent = data.cart_count;
-                    showToast("Produit ajouté au panier 🛒");
-                }
-            });
-        });
-    });
 
     // WISHLIST
     document.querySelectorAll(".wishlist-btn").forEach(button => {
@@ -210,9 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             });
         });
-    });
 
-});
+    });
 </script>
 
 </body>
