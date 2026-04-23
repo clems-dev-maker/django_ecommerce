@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 import stripe
 from django.conf import settings
 from django.http import JsonResponse
-from django.http import JsonResponse
 from .forms import CustomUserCreationForm
 from django.core.mail import send_mail
 from django.contrib.auth import login
@@ -53,15 +52,53 @@ def add_to_cart(request, product_id):
     return redirect('cart_detail')
 
 
+@login_required
 def remove_from_cart(request, item_id):
-    try:
-        cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
-        cart_item.delete()  # Supprimer l'élément du panier
-        messages.success(request, "Le produit a été retiré du panier.")
-    except CartItem.DoesNotExist:
-        messages.error(request, "L'élément n'existe pas dans votre panier.")
+    item = CartItem.objects.filter(
+        id=item_id,
+        cart__user=request.user
+    ).first()
 
-    return redirect('cart_detail')  # Redirige vers la page du panier
+    if item:
+        item.delete()
+
+    # Gestion AJAX
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
+
+    return redirect('cart_detail')
+
+
+@login_required
+def update_cart_item(request, item_id, action):
+    try:
+        item = CartItem.objects.get(id=item_id, cart__user=request.user)
+
+        if action == "increase":
+            item.quantity += 1
+            item.save()
+
+        elif action == "decrease":
+            item.quantity -= 1
+            if item.quantity <= 0:
+                item.delete()
+            else:
+                item.save()
+
+        # Recalcul panier
+        cart = item.cart
+        cart_items = cart.cartitem_set.all()
+        cart_count = sum(i.quantity for i in cart_items)
+        cart_total = sum(i.quantity * i.product.price for i in cart_items)
+
+        return JsonResponse({
+            "success": True,
+            "cart_count": cart_count,
+            "cart_total": float(cart_total)
+        })
+
+    except CartItem.DoesNotExist:
+        return JsonResponse({"success": False})
 
 
 @login_required

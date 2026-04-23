@@ -2,47 +2,127 @@
 {% load cart_extras %}
 
 {% block content %}
-<h1 class="my-5 text-center">Votre Panier</h1>
+    <h1 class="my-5 text-center">Votre Panier</h1>
 
-<div class="row">
-    <div class="col-md-8 offset-md-2">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
 
-        {% if cart_items %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Produit</th>
-                    <th>Quantité</th>
-                    <th>Prix</th>
-                    <th>Total</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.product.price }}€</td>
-                    <td>{{ item.product.price|multiply:item.quantity }}€</td>
-                    <td>
-                        <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm">
-                            <i class="fa-solid fa-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% if cart_items %}
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                        <th>Prix</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in cart_items %}
+                        <tr data-id="{{ item.id }}">
+                            <td>{{ item.product.name }}</td>
 
-        <a href="{% url 'checkout' %}" class="btn btn-success w-100">
-            Passer à la commande
-        </a>
+                            <td>
+                                <button class="btn btn-sm btn-outline-secondary decrease">-</button>
+                                <span class="mx-2 quantity">{{ item.quantity }}</span>
+                                <button class="btn btn-sm btn-outline-secondary increase">+</button>
+                            </td>
 
-        {% else %}
-            <p class="text-center">Votre panier est vide.</p>
-        {% endif %}
+                            <td>{{ item.product.price }}€</td>
 
+                            <td class="item-total">
+                                {{ item.product.price|multiply:item.quantity }}€
+                            </td>
+
+                            <td>
+                                <button class="remove-item text-danger" data-id="{{ item.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <a href="{% url 'checkout' %}" class="btn btn-success w-100">
+                    Passer à la commande
+                </a>
+
+            {% else %}
+                <p class="text-center">Votre panier est vide.</p>
+            {% endif %}
+
+        </div>
     </div>
-</div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            function updateCart(itemId, action, row) {
+
+                fetch(`/cart/update/${itemId}/${action}/`)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (data.success) {
+
+                            if (action === "delete") {
+                                row.remove();
+                            }
+
+                            // MAJ badge panier
+                            let badge = document.querySelector(".cart-count");
+                            if (badge) badge.textContent = data.cart_count;
+
+                            // Reload propre si panier vide
+                            if (data.cart_count === 0) {
+                                location.reload();
+                            } else {
+                                location.reload(); // simple pour recalcul total
+                            }
+                        }
+                    });
+            }
+
+            document.querySelectorAll("tr[data-id]").forEach(row => {
+
+                let itemId = row.dataset.id;
+
+                row.querySelector(".increase").addEventListener("click", () => {
+                    updateCart(itemId, "increase", row);
+                });
+
+                row.querySelector(".decrease").addEventListener("click", () => {
+                    updateCart(itemId, "decrease", row);
+                });
+
+                row.querySelector(".delete").addEventListener("click", () => {
+                    updateCart(itemId, "decrease", row); // delete via quantity 0
+                });
+
+            });
+
+        });
+
+        document.querySelectorAll(".remove-item").forEach(btn => {
+
+            btn.addEventListener("click", function () {
+
+                let itemId = this.dataset.id;
+
+                fetch(`/cart/remove/${itemId}/`, {
+                    headers: {"X-Requested-With": "XMLHttpRequest"}
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        }
+                    });
+
+            });
+
+        });
+    </script>
 {% endblock %}
