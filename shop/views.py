@@ -62,11 +62,29 @@ def remove_from_cart(request, item_id):
     if item:
         item.delete()
 
-    # Gestion AJAX
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'success': True})
+    cart = Cart.objects.get(user=request.user)
+    items = cart.cartitem_set.all()
 
-    return redirect('cart_detail')
+    cart_data = [
+        {
+            "id": i.id,
+            "name": i.product.name,
+            "price": float(i.product.price),
+            "quantity": i.quantity,
+            "image": i.product.image.url
+        }
+        for i in items
+    ]
+
+    cart_count = sum(i.quantity for i in items)
+    cart_total = sum(i.quantity * i.product.price for i in items)
+
+    return JsonResponse({
+        "success": True,
+        "cart_items": cart_data,
+        "cart_count": cart_count,
+        "cart_total": float(cart_total)
+    })
 
 
 @login_required

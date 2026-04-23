@@ -43,16 +43,16 @@
                             {% endif %}
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end p-3" style="width: 320px;">
+                        <ul class="dropdown-menu dropdown-menu-end p-3" style="width: 320px;" id="cart-dropdown">
+
                             <h6>Mon panier</h6>
                             <hr>
 
-                            {% if cart_items_nav %}
+                            <div id="cart-items-container">
                                 {% for item in cart_items_nav %}
-                                    <div class="d-flex align-items-center mb-2">
+                                    <div class="d-flex align-items-center mb-2" data-id="{{ item.id }}">
 
-                                        <img src="{{ item.product.image.url }}" width="40" height="40"
-                                             class="rounded me-2" alt="product_image">
+                                        <img src="{{ item.product.image.url }}" width="40" class="me-2">
 
                                         <div class="flex-grow-1">
                                             <small>{{ item.product.name }}</small><br>
@@ -60,27 +60,25 @@
                                                 x {{ item.product.price }}€</small>
                                         </div>
 
-                                        <a href="{% url 'remove_from_cart' item.id %}" class="text-danger ms-2">
+                                        <button class="remove-item text-danger ms-2" data-id="{{ item.id }}">
                                             <i class="fas fa-trash"></i>
-                                        </a>
+                                        </button>
 
                                     </div>
                                 {% endfor %}
+                            </div>
 
-                                <hr>
+                            <hr>
 
-                                <div class="d-flex justify-content-between">
-                                    <strong>Total :</strong>
-                                    <strong>{{ cart_total }} €</strong>
-                                </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Total :</strong>
+                                <strong id="cart-total">{{ cart_total }} €</strong>
+                            </div>
 
-                                <a href="{% url 'cart_detail' %}" class="btn btn-primary w-100 mt-2">
-                                    Voir le panier
-                                </a>
+                            <a href="{% url 'cart_detail' %}" class="btn btn-primary w-100 mt-2">
+                                Voir le panier
+                            </a>
 
-                            {% else %}
-                                <p class="text-muted">Panier vide</p>
-                            {% endif %}
                         </ul>
                     </li>
 
@@ -224,6 +222,80 @@ function showToast(message) {
         });
 
     });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    function attachRemoveEvents() {
+        document.querySelectorAll(".remove-item").forEach(btn => {
+
+            btn.onclick = function () {
+
+                let itemId = this.dataset.id;
+
+                fetch(`/cart/remove/${itemId}/`, {
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.success) {
+
+                        updateCartUI(data);
+
+                        showToast("Produit supprimé 🗑");
+                    }
+
+                });
+            };
+        });
+    }
+
+    function updateCartUI(data) {
+
+        let container = document.getElementById("cart-items-container");
+        let totalEl = document.getElementById("cart-total");
+        let badge = document.querySelector(".cart-count");
+
+        // Badge
+        if (badge) badge.textContent = data.cart_count;
+
+        // Total
+        if (totalEl) totalEl.textContent = data.cart_total + " €";
+
+        // Contenu
+        container.innerHTML = "";
+
+        if (data.cart_items.length === 0) {
+            container.innerHTML = "<p class='text-muted'>Panier vide</p>";
+            return;
+        }
+
+        data.cart_items.forEach(item => {
+
+            container.innerHTML += `
+                <div class="d-flex align-items-center mb-2" data-id="${item.id}">
+                    <img src="${item.image}" width="40" class="me-2">
+                    <div class="flex-grow-1">
+                        <small>${item.name}</small><br>
+                        <small class="text-muted">${item.quantity} x ${item.price}€</small>
+                    </div>
+                    <button class="remove-item text-danger ms-2" data-id="${item.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        });
+
+        // IMPORTANT : réattacher les events
+        attachRemoveEvents();
+    }
+
+    // Initialisation
+    attachRemoveEvents();
+
+});
 </script>
 
 </body>
