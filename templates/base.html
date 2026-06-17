@@ -225,56 +225,56 @@ function showToast(message) {
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    function attachRemoveEvents() {
-        document.querySelectorAll(".remove-item").forEach(btn => {
+        function attachRemoveEvents() {
+            document.querySelectorAll(".remove-item").forEach(btn => {
 
-            btn.onclick = function () {
+                btn.onclick = function () {
 
-                let itemId = this.dataset.id;
+                    let itemId = this.dataset.id;
 
-                fetch(`/cart/remove/${itemId}/`, {
-                    headers: { "X-Requested-With": "XMLHttpRequest" }
-                })
-                .then(res => res.json())
-                .then(data => {
+                    fetch(`/cart/remove/${itemId}/`, {
+                        headers: {"X-Requested-With": "XMLHttpRequest"}
+                    })
+                        .then(res => res.json())
+                        .then(data => {
 
-                    if (data.success) {
+                            if (data.success) {
 
-                        updateCartUI(data);
+                                updateCartUI(data);
 
-                        showToast("Produit supprimé 🗑");
-                    }
+                                showToast("Produit supprimé 🗑");
+                            }
 
-                });
-            };
-        });
-    }
-
-    function updateCartUI(data) {
-
-        let container = document.getElementById("cart-items-container");
-        let totalEl = document.getElementById("cart-total");
-        let badge = document.querySelector(".cart-count");
-
-        // Badge
-        if (badge) badge.textContent = data.cart_count;
-
-        // Total
-        if (totalEl) totalEl.textContent = data.cart_total + " €";
-
-        // Contenu
-        container.innerHTML = "";
-
-        if (data.cart_items.length === 0) {
-            container.innerHTML = "<p class='text-muted'>Panier vide</p>";
-            return;
+                        });
+                };
+            });
         }
 
-        data.cart_items.forEach(item => {
+        function updateCartUI(data) {
 
-            container.innerHTML += `
+            let container = document.getElementById("cart-items-container");
+            let totalEl = document.getElementById("cart-total");
+            let badge = document.querySelector(".cart-count");
+
+            // Badge
+            if (badge) badge.textContent = data.cart_count;
+
+            // Total
+            if (totalEl) totalEl.textContent = data.cart_total + " €";
+
+            // Contenu
+            container.innerHTML = "";
+
+            if (data.cart_items.length === 0) {
+                container.innerHTML = "<p class='text-muted'>Panier vide</p>";
+                return;
+            }
+
+            data.cart_items.forEach(item => {
+
+                container.innerHTML += `
                 <div class="d-flex align-items-center mb-2" data-id="${item.id}">
                     <img src="${item.image}" width="40" class="me-2" alt="image">
                     <div class="flex-grow-1">
@@ -286,16 +286,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     </button>
                 </div>
             `;
-        });
+            });
 
-        // IMPORTANT : réattacher les events
+            // IMPORTANT : réattacher les events
+            attachRemoveEvents();
+        }
+
+        // Initialisation
         attachRemoveEvents();
-    }
 
-    // Initialisation
-    attachRemoveEvents();
-
-});
+    });
 </script>
 
 </body>
