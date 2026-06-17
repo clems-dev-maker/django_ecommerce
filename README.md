@@ -161,6 +161,11 @@ Cette application permet aux utilisateurs de :
 
 ![Profil](screenshots/profile.png)
 
+
+## Gif de démonstration
+
+![Gif](screenshots/e_commerce_app.gif)
+
 ---
 
 # ⚙️ Installation
