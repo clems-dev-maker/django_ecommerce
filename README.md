@@ -2,7 +2,7 @@
 
 Une application e-commerce complète développée avec **Django**, **Bootstrap 5**, **JavaScript (AJAX)** et **Stripe**.
 
-L'objectif de ce projet est de proposer une boutique en ligne moderne avec gestion des utilisateurs, panier dynamique, liste de favoris, paiement sécurisé et interface responsive.
+L'objectif de ce projet est de proposer une boutique en ligne moderne avec gestion des utilisateurs, panier dynamique, liste de favoris, intégration du paiement Stripe et interface responsive.
 
 ---
 
@@ -18,7 +18,7 @@ Cette application permet aux utilisateurs de :
 - Ajouter des produits aux favoris
 - Gérer les quantités du panier
 - Supprimer des produits du panier
-- Effectuer un paiement sécurisé avec Stripe
+- Effectuer un paiement avec Stripe
 - Consulter leur profil utilisateur
 - Visualiser leurs favoris
 - Recevoir des notifications visuelles (Toast)
@@ -31,7 +31,7 @@ Cette application permet aux utilisateurs de :
 
 - Inscription
 - Connexion
-- Déconnexion sécurisée
+- Déconnexion
 - Profil utilisateur
 
 ---
@@ -42,18 +42,18 @@ Cette application permet aux utilisateurs de :
 - Fiche produit détaillée
 - Images produits
 - Gestion du stock
-- Affichage disponibilité
+- Affichage de la disponibilité
 
 ---
 
 ## 🛒 Panier dynamique
 
 - Ajout au panier
-- Suppression du panier
+- Suppression de produits du panier
 - Modification des quantités
 - Mise à jour du compteur en temps réel
 - Dropdown panier dans la navbar
-- Total du panier calculé automatiquement
+- Calcul automatique du total
 
 ---
 
@@ -68,8 +68,8 @@ Cette application permet aux utilisateurs de :
 
 ## 💳 Paiement Stripe
 
-- Paiement sécurisé
-- Stripe Checkout
+- Intégration de Stripe Checkout
+- Paiement via Stripe
 - Redirection après paiement
 - Gestion des commandes
 
@@ -161,16 +161,13 @@ Cette application permet aux utilisateurs de :
 
 ![Profil](screenshots/profile.png)
 
-
-## Gif de démonstration
-
-![Gif](screenshots/e_commerce_app.gif)
-
 ---
 
-# ⚙️ Installation
+## 🎬 Démonstration
 
-## 1. Cloner le projet
+![Démonstration](screenshots/e_commerce_app.gif)
+
+---
 
 # ⚙️ Installation
 
@@ -179,200 +176,3 @@ Cette application permet aux utilisateurs de :
 ```bash
 git clone https://github.com/clems-dev-maker/django_ecommerce.git
 cd django_ecommerce
-
-## 2. Créer un environnement virtuel
-
-```bash
-python -m venv venv
-```
-
-### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-### Linux / Mac
-
-```bash
-source venv/bin/activate
-```
-
----
-
-## 3. Installer les dépendances
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 4. Créer le fichier .env
-
-Créer un fichier :
-
-```env
-SECRET_KEY=votre_secret_key
-
-EMAIL_HOST_USER=votre_email@gmail.com
-EMAIL_HOST_PASSWORD=votre_mot_de_passe_application
-
-STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxx
-STRIPE_SECRET_KEY=sk_test_xxxxxxxxx
-```
-
----
-
-## 5. Effectuer les migrations
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
----
-
-## 6. Créer un super utilisateur
-
-```bash
-python manage.py createsuperuser
-```
-
----
-
-## 7. Lancer le serveur
-
-```bash
-python manage.py runserver
-```
-
----
-
-Accéder au site :
-
-```text
-http://127.0.0.1:8000/
-```
-
----
-
-# 📂 Structure du projet
-
-```text
-ecommerce/
-│
-├── ecommerce/
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-│
-├── shop/
-│   ├── migrations/
-│   ├── static/
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── images/
-│   │
-│   ├── templates/
-│   │   ├── registration/
-│   │   │   ├── login.html
-│   │   │   └── signup.html
-│   │   │
-│   │   └── shop/
-│   │       ├── base.html
-│   │       ├── product_list.html
-│   │       ├── product_detail.html
-│   │       ├── cart_detail.html
-│   │       ├── wishlist.html
-│   │       ├── payment.html
-│   │       └── profile.html
-│   │
-│   ├── models.py
-│   ├── views.py
-│   ├── forms.py
-│   ├── urls.py
-│   └── context_processors.py
-│
-├── media/
-│
-├── .env
-├── requirements.txt
-├── manage.py
-└── README.md
-```
-
----
-
-# 🔐 Sécurité
-
-## Variables d'environnement
-
-Les clés sensibles ne sont jamais stockées dans le dépôt Git.
-
-Toutes les informations sensibles sont chargées via un fichier `.env`.
-
-### Exemple
-
-```env
-SECRET_KEY=xxxxxxxxxxxx
-
-EMAIL_HOST_USER=xxxxxxxx@gmail.com
-EMAIL_HOST_PASSWORD=xxxxxxxx
-
-STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxx
-STRIPE_SECRET_KEY=sk_test_xxxxxxxxx
-```
-
----
-
-## Ajouter `.env` dans `.gitignore`
-
-```gitignore
-.env
-```
-
----
-
-## Stripe
-
-Les clés Stripe utilisées en développement sont des clés de test :
-
-```env
-STRIPE_PUBLIC_KEY=pk_test_xxxxx
-STRIPE_SECRET_KEY=sk_test_xxxxx
-```
-
-Ne jamais publier les clés de production.
-
----
-
-# 📈 Améliorations futures
-
-- Historique des commandes
-- Statuts des commandes
-- Factures PDF
-- Coupons de réduction
-- Recherche AJAX
-- Pagination
-- Notifications temps réel
-- Dashboard administrateur avancé
-- Déploiement Docker
-
----
-
-# 👨‍💻 Auteur
-
-**Clément Cathala**
-
-GitHub : https://github.com/clems-dev-maker
-
-Projet réalisé dans le cadre de l'apprentissage du développement web avec Django.
-
----
-
-# 📄 Licence
-
-Projet distribué sous licence MIT.
-
-Vous êtes libre de l'utiliser, le modifier et le partager.
