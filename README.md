@@ -176,3 +176,129 @@ Cette application permet aux utilisateurs de :
 ```bash
 git clone https://github.com/clems-dev-maker/django_ecommerce.git
 cd django_ecommerce
+2. Créer un environnement virtuel
+python -m venv venv
+Windows
+venv\Scripts\activate
+Linux / macOS
+source venv/bin/activate
+3. Installer les dépendances
+pip install -r requirements.txt
+4. Créer le fichier .env
+
+Créer un fichier .env à la racine du projet :
+
+SECRET_KEY=your_secret_key
+
+EMAIL_HOST_USER=your_email@gmail.com
+EMAIL_HOST_PASSWORD=your_application_password
+
+STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxx
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxx
+
+⚠️ Les valeurs ci-dessus sont uniquement des exemples. Ne publiez jamais vos véritables clés ou mots de passe dans le dépôt Git.
+
+5. Effectuer les migrations
+python manage.py migrate
+6. Créer un super utilisateur
+python manage.py createsuperuser
+7. Lancer le serveur
+python manage.py runserver
+
+Accéder ensuite au site :
+
+http://127.0.0.1:8000/
+📂 Structure du projet
+django_ecommerce/
+│
+├── ecommerce/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+│
+├── shop/
+│   ├── migrations/
+│   ├── static/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── images/
+│   │
+│   ├── templates/
+│   │   ├── registration/
+│   │   │   ├── login.html
+│   │   │   └── signup.html
+│   │   │
+│   │   └── shop/
+│   │       ├── base.html
+│   │       ├── product_list.html
+│   │       ├── product_detail.html
+│   │       ├── cart_detail.html
+│   │       ├── wishlist.html
+│   │       ├── payment.html
+│   │       └── profile.html
+│   │
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   └── context_processors.py
+│
+├── media/
+├── requirements.txt
+├── manage.py
+├── .gitignore
+└── README.md
+🔐 Sécurité
+Variables d'environnement
+
+Les informations sensibles ne sont pas stockées directement dans le dépôt Git.
+
+Elles sont chargées via un fichier .env.
+
+Exemple
+SECRET_KEY=xxxxxxxxxxxx
+
+EMAIL_HOST_USER=xxxxxxxx@gmail.com
+EMAIL_HOST_PASSWORD=xxxxxxxx
+
+STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxx
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxx
+Ajouter .env dans .gitignore
+
+Le fichier .env doit être exclu du dépôt Git :
+
+.env
+Stripe
+
+Les clés Stripe utilisées en développement sont des clés de test :
+
+STRIPE_PUBLIC_KEY=pk_test_xxxxx
+STRIPE_SECRET_KEY=sk_test_xxxxx
+
+Ne jamais publier les clés Stripe de production.
+
+📈 Améliorations futures
+Historique des commandes
+Statuts des commandes
+Factures PDF
+Coupons de réduction
+Recherche AJAX
+Pagination
+Notifications temps réel
+Dashboard administrateur avancé
+Déploiement Docker
+👨‍💻 Auteur
+
+Clément Cathala
+
+GitHub : clems-dev-maker
+
+Projet réalisé dans le cadre de l'apprentissage du développement web avec Django.
+
+🔗 Voir le projet sur GitHub
+
+📄 Licence
+
+Projet distribué sous licence MIT.
+
+Vous êtes libre de l'utiliser, de le modifier et de le partager.
