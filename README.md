@@ -172,10 +172,13 @@ Cette application permet aux utilisateurs de :
 
 ## 1. Cloner le projet
 
+# ⚙️ Installation
+
+## 1. Cloner le projet
+
 ```bash
-git clone https://github.com/votre-compte/ecommerce-django.git
-cd ecommerce-django
-```
+git clone https://github.com/clems-dev-maker/django_ecommerce.git
+cd django_ecommerce
 
 ## 2. Créer un environnement virtuel
 
